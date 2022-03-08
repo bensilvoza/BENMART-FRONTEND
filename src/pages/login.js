@@ -18,13 +18,60 @@ function Login() {
   var [messageColor, setMessageColor] = React.useState("");
   var [message, setMessage] = React.useState("empty");
   var [loading, setLoading] = React.useState(false);
+  var [administratorKey, setAdministratorKey] = React.useState("");
+  var [toggleModal, setToggleModal] = React.useState(false);
+  var [incorrectAdministratorKey, setIncorrectAdministratorKey] =
+    React.useState(false);
 
   const navigate = useNavigate();
 
+  // ENV
   // protectRoute
   // Protecting the route from unathorized access
   // adding checkpoint in endpoint
   var protectRoute = process.env.REACT_APP_PROTECT_ROUTE;
+  var temporaryAdministratorKey = process.env.REACT_APP_ADMINISTRATOR_KEY;
+
+  // modal component
+  function handleClickAdministratorIcon() {
+    setToggleModal(true);
+  }
+
+  function handleCloseModal() {
+    setToggleModal(false);
+  }
+
+  function handleClickCancelModal() {
+    console.log("test");
+    setToggleModal(false);
+  }
+
+  async function handleSubmitAdministratorKey(e) {
+    e.preventDefault();
+
+    // original address -> "/administratorKey"
+    var getData = await axios.get(
+      `http://localhost:5000/${protectRoute}/administratorKey`
+    );
+
+    if (getData["data"].length == 0) {
+      // administrator is currently using
+      // a temporary key
+      console.log(administratorKey);
+      console.log(temporaryAdministratorKey);
+      if (administratorKey == temporaryAdministratorKey) {
+        // temporaryAdministratorKey correct
+        return navigate("/administrator");
+      } else {
+        // temporaryAdministratorKey incorrect
+        setIncorrectAdministratorKey(true);
+        return;
+      }
+    } else {
+      // administrator is now using
+      // secured key
+    }
+  }
 
   function handleClickCreateAccount() {
     navigate("/register");
@@ -92,18 +139,29 @@ function Login() {
           >
             <p
               style={{
-                fontFamily: "Fredoka One",
+                fontFamily: "Montserrat",
                 fontSize: "2.5rem",
                 margin: "0",
                 color: "#3A3A38",
+                fontWeight: "900",
               }}
             >
               BENMART
             </p>
-            <span
-              style={{ fontSize: "1.5rem", color: "gray", cursor: "pointer" }}
-            >
-              <i className="bi bi-clipboard"></i>
+            <span>
+              <AdministratorKeyModal
+                openModal={toggleModal}
+                closeModal={handleCloseModal}
+                clickAdministratorModal={toggleModal}
+                cancelModal={handleClickCancelModal}
+                clickSubmit={handleSubmitAdministratorKey}
+                showIncorrectKey={incorrectAdministratorKey}
+                adminKey={administratorKey}
+                change={function (e) {
+                  setAdministratorKey(e.currentTarget.value);
+                  setIncorrectAdministratorKey(false);
+                }}
+              />
             </span>
           </div>
 
@@ -137,9 +195,7 @@ function Login() {
           </p>
         </Cell>
 
-        <Cell span={12}>
-          <AdministratorKeyModal />
-        </Cell>
+        <Cell span={12}></Cell>
 
         <Cell span={6}>
           <form onSubmit={handleSubmit}>

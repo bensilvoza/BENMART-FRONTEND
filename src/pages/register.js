@@ -144,7 +144,7 @@ function Register() {
             style={{
               fontFamily: "Fredoka One",
               fontSize: "2.5rem",
-              margiTop: "1rem",
+              marginTop: "1rem",
               marginBottom: "1rem",
               color: "#3A3A38",
             }}
