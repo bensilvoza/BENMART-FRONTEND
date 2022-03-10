@@ -12,11 +12,26 @@ import { Spinner } from "baseui/spinner";
 import AdministratorNavbar from "../../components/administratorNavbar";
 
 export default function Home() {
+  var [query, setQuery] = React.useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    console.log(query);
+  }
+
   return (
     <>
       <Grid>
         <Cell span={12}>
-          <AdministratorNavbar />
+          <AdministratorNavbar
+            ponClick={function (val) {
+              console.log(val.target.innerText.toLowerCase());
+            }}
+            pvalue={query}
+            ponChange={(e) => setQuery(e.currentTarget.value)}
+            phandleSubmit={handleSubmit}
+          />
         </Cell>
       </Grid>
       <hr />
